@@ -32,6 +32,6 @@ pub fn complete() -> ! {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    error!("{:?}", info);
+    error!("{}", info);
     loop {}
 }
