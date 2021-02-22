@@ -5,8 +5,6 @@ use esp32_hal::{clock_control::sleep, prelude::*};
 use log::{error, info};
 
 pub fn setup() {
-    esp32_logger::init();
-
     let mut counter = 10;
     loop {
         if counter > 1 {
