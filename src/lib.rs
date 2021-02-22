@@ -1,9 +1,12 @@
 #![no_std]
 
+use core::panic::PanicInfo;
 use esp32_hal::{clock_control::sleep, prelude::*};
-use log::info;
+use log::{error, info};
 
-pub fn countdown() {
+pub fn setup() {
+    esp32_logger::init();
+
     let mut counter = 10;
     loop {
         if counter > 1 {
@@ -17,6 +20,8 @@ pub fn countdown() {
         sleep(1.s());
         counter -= 1;
     }
+
+    info!("Testing...");
 }
 
 pub fn complete() -> ! {
@@ -25,4 +30,10 @@ pub fn complete() -> ! {
     loop {
         sleep(1.s());
     }
+}
+
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    error!("{:?}", info);
+    loop {}
 }

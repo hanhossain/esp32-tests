@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
 
-use core::panic::PanicInfo;
 use esp32_hal::{
     clock_control::{ClockControl, XTAL_FREQUENCY_AUTO},
     dport::Split,
@@ -10,8 +9,11 @@ use esp32_hal::{
     timer::Timer,
 };
 use esp32_tests as tests;
-use log::{error, info};
+use log::info;
 
+// Assumptions:
+// - GPIO 34 is tied to 3.3V
+// - GPIO 17 is tied to GND
 #[entry]
 fn main() -> ! {
     let dp = target::Peripherals::take().expect("failed to acquire peripherals");
@@ -35,13 +37,9 @@ fn main() -> ! {
     watchdog0.disable();
     watchdog1.disable();
 
-    esp32_logger::init();
-
     let gpios = dp.GPIO.split();
 
-    tests::countdown();
-
-    info!("Testing...");
+    tests::setup();
 
     info!("Test: Floating input is high");
     let input_3_3v = gpios.gpio34.into_floating_input();
@@ -54,10 +52,4 @@ fn main() -> ! {
     info!("Passed!");
 
     tests::complete();
-}
-
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    error!("{:?}", info);
-    loop {}
 }
